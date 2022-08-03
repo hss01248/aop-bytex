@@ -1,0 +1,57 @@
+plugins {
+    id 'java-library'
+}
+
+
+//使用通用的依赖和发布方式
+/*apply from: rootProject.file('gradle/plugin.gradle')
+//如果module需要单独添加依赖则添加下面的
+dependencies {
+    compile project(':TransformEngine')
+    implementation "br.usp.each.saeg:asm-defuse:0.0.5"
+}*/
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    jcenter()
+    google()//加在这里
+    maven {
+        url  'https://jitpack.io'
+    }
+}
+
+dependencies {
+    compile gradleApi()
+    compileOnly "com.android.tools.build:gradle:4.1.0"
+// https://mvnrepository.com/artifact/com.bytedance.android.byteX/common
+    compile 'com.bytedance.android.byteX:common:0.2.7'
+// https://mvnrepository.com/artifact/com.bytedance.android.byteX/PluginConfigProcessor
+    compile 'com.bytedance.android.byteX:PluginConfigProcessor:0.2.7'
+
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+//发布到本地或者远程
+apply plugin: 'maven'
+
+//group和version在后面使用自定义插件的时候会用到
+group='com.hss01248.plugin2'
+version='1.0.02'
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            //提交到远程服务器：
+            // repository(url: "http://www.xxx.com/repos") {
+            //    authentication(userName: "admin", password: "admin")
+            // }
+            //本地的Maven地址设置为D:/repos
+            repository(url: mavenLocal().getUrl())
+        }
+    }
+}
