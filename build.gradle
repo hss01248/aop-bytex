@@ -23,9 +23,16 @@ buildscript {
         // https://mvnrepository.com/artifact/com.bytedance.android.byteX/base-plugin
         classpath "com.bytedance.android.byteX:base-plugin:0.3.0"
         //发布后的
-        classpath "com.hss01248.plugin2:hss-atest-plungin:1.0.08"
+        classpath "com.hss01248.plugin2:hss-atest-plungin:+"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+    }
+    configurations {
+        all {
+            resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+            // resolutionStrategy.cacheChangingModulesFor 4, 'hours'
+            resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+        }
     }
 }
 

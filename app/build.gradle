@@ -33,9 +33,29 @@ android {
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.4.2'
-    implementation 'com.google.android.material:material:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
+configurations {
+    all*.exclude group: 'androidx.viewpager', module: 'viewpager'
+
+    all {
+        resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+        // resolutionStrategy.cacheChangingModulesFor 4, 'hours'
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+}
+
+afterEvaluate {
+    // 1. 找到需要依赖自己 Task的构建流程的Task
+    def uploadArchives = tasks.findByName("assembleDebug")
+
+    //示例2: 插入到uploadArchives之前:
+    def task2 = tasks.findByName("clean")
+    // 2. 通过dependsOn 方法，插入到指定Task之前
+    if (uploadArchives != null) {
+        uploadArchives.dependsOn(task2)
+    }
+
 }

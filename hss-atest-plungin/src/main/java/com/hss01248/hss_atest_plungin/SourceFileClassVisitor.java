@@ -33,7 +33,7 @@ public class SourceFileClassVisitor extends BaseClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
-        mContext.getLogger().i("xxxmethod ----> "+ name+" , "+ signature);
+        //mContext.getLogger().i("xxxmethod ----> "+ name+" , "+ signature);
         if (extension.isDeleteLineNumber()) {
             return new MethodVisitor(Constants.ASM_API, mv) {
                 @Override
