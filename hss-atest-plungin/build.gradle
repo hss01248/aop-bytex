@@ -41,7 +41,7 @@ apply plugin: 'maven'
 
 //group和version在后面使用自定义插件的时候会用到
 group = 'com.hss01248.plugin2'
-version = '1.0.03'
+version = '1.0.07'
 
 uploadArchives {
     repositories {
@@ -51,7 +51,8 @@ uploadArchives {
             //    authentication(userName: "admin", password: "admin")
             // }
             //本地的Maven地址设置为D:/repos
-            repository(url: mavenLocal().getUrl())
+            //repository(url: mavenLocal().getUrl())
+            repository(url: uri('../gradle_plugins'))
             /*    pom.artifactId = '项目信息'
                 pom.version = '版本信息'
                 repository(url: '私服仓库地址') {

@@ -30,17 +30,23 @@ public class SourceFileKillerPlugin2 extends CommonPlugin<SourceFileExtension, S
     }
 
     @Override
+    public void traverse(@Nonnull String relativePath, @Nonnull ClassVisitorChain chain) {
+        super.traverse(relativePath, chain);
+    }
+
+    @Override
     public boolean transform(@Nonnull String relativePath, @Nonnull ClassVisitorChain chain) {
         //我们需要修改字节码,所以需要注册一个ClassVisitor
         //We need to modify the bytecode, so we need to register a ClassVisitor
-        chain.connect(new SourceFileClassVisitor(extension));
-        return super.transform(relativePath, chain);
+        chain.connect(new SourceFileClassVisitor(extension,mContext));
+        mContext.getLogger().i("transform ----> "+ relativePath);
+        return true;
     }
 
     @Override
     public boolean transform(@Nonnull String relativePath, @Nonnull ClassNode node) {
         if(node.visibleAnnotations != null && !node.visibleAnnotations.isEmpty()){
-            mContext.getLogger().i(node.visibleAnnotations.toString());
+            mContext.getLogger().i(node.name+": has anno: "+node.visibleAnnotations.toString());
         }
         return super.transform(relativePath, node);
     }

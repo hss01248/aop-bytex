@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
 }
 
+apply from: "plugin-bytex.gradle"
+
 android {
     compileSdkVersion 32
     buildToolsVersion "30.0.3"
