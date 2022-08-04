@@ -23,7 +23,7 @@ def pluginEnable = true
 def pluginEnableInDebug = true
 def pluginLogLevel = "DEBUG"
 
-apply plugin: 'bytex'
+/*apply plugin: 'bytex'
 ByteX {
     enable pluginEnable
     enableInDebug pluginEnableInDebug
@@ -37,7 +37,7 @@ ByteX {
     // value is ANDed with each plugin value.True by default
     shouldSaveCache false
     logLevel pluginLogLevel
-}
+}*/
 
 apply plugin: 'bytex.sourcefile2'
 SourceFile2{
