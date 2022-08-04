@@ -8,6 +8,7 @@ import com.ss.android.ugc.bytex.pluginconfig.anno.PluginConfig;
 import com.android.build.gradle.AppExtension;
 
 import org.gradle.api.Project;
+import org.objectweb.asm.tree.ClassNode;
 
 import javax.annotation.Nonnull;
 
@@ -20,9 +21,12 @@ import javax.annotation.Nonnull;
 //apply plugin: 'bytex.sourcefile2'
 //@PluginConfig("bytex.sourcefile2")
 public class SourceFileKillerPlugin2 extends CommonPlugin<SourceFileExtension, SourceFileContext> {
+
+    SourceFileContext mContext;
     @Override
     protected SourceFileContext getContext(Project project, AppExtension android, SourceFileExtension extension) {
-        return new SourceFileContext(project, android, extension);
+        mContext  =  new SourceFileContext(project, android, extension);
+        return mContext;
     }
 
     @Override
@@ -31,6 +35,14 @@ public class SourceFileKillerPlugin2 extends CommonPlugin<SourceFileExtension, S
         //We need to modify the bytecode, so we need to register a ClassVisitor
         chain.connect(new SourceFileClassVisitor(extension));
         return super.transform(relativePath, chain);
+    }
+
+    @Override
+    public boolean transform(@Nonnull String relativePath, @Nonnull ClassNode node) {
+        if(node.visibleAnnotations != null && !node.visibleAnnotations.isEmpty()){
+            mContext.getLogger().i(node.visibleAnnotations.toString());
+        }
+        return super.transform(relativePath, node);
     }
 
     @Nonnull

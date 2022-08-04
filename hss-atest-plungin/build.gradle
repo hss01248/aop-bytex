@@ -17,7 +17,7 @@ repositories {
     jcenter()
     google()//加在这里
     maven {
-        url  'https://jitpack.io'
+        url 'https://jitpack.io'
     }
 }
 
@@ -40,8 +40,8 @@ java {
 apply plugin: 'maven'
 
 //group和version在后面使用自定义插件的时候会用到
-group='com.hss01248.plugin2'
-version='1.0.02'
+group = 'com.hss01248.plugin2'
+version = '1.0.03'
 
 uploadArchives {
     repositories {
@@ -52,6 +52,55 @@ uploadArchives {
             // }
             //本地的Maven地址设置为D:/repos
             repository(url: mavenLocal().getUrl())
+            /*    pom.artifactId = '项目信息'
+                pom.version = '版本信息'
+                repository(url: '私服仓库地址') {
+                    authentication(userName: '账号', password: '密码')
+                }
+                snapshotRepository(url: '私服快照地址') {
+                    authentication(userName: '账号', password: '密码')
+                }*/
         }
     }
 }
+
+
+task task1() {
+    doLast {
+        def url = uploadArchives.repositories.mavenDeployer.repository.url
+        def groupId = uploadArchives.repositories.mavenDeployer.pom.groupId
+        def artifactId = uploadArchives.repositories.mavenDeployer.pom.artifactId
+        def version = uploadArchives.repositories.mavenDeployer.pom.version
+        println "发布版本: $groupId:$artifactId:$version"
+        println "url: $url"
+    }
+}
+
+task task2() {
+    doLast {
+        println("task before------>")
+    }
+}
+
+//https://juejin.cn/post/6844904016778903560
+//https://juejin.cn/post/6982379643311489032
+
+afterEvaluate {
+    // 1. 找到需要依赖自己 Task的构建流程的Task
+    def uploadArchives = tasks.findByName("uploadArchives")
+    def task1 = tasks.findByName("task1")
+    println "uploadArchives=$uploadArchives"
+    // 2. 通过finalizedBy 方法，挂载到指定Task之后
+    if (uploadArchives != null) {
+        uploadArchives.finalizedBy(task1)
+    }
+
+    //示例2: 插入到uploadArchives之前:
+    def task2 = tasks.findByName("task2")
+    // 2. 通过dependsOn 方法，插入到指定Task之前
+    if (uploadArchives != null) {
+        uploadArchives.dependsOn(task2)
+    }
+
+}
+
