@@ -1,6 +1,8 @@
-package com.hss01248.aop.dynamicproxy.java;
+package com.hss01248.aop.dynamicproxy.android;
 
-
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -9,16 +11,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 
-public class DynamicProxy {
+public class DynamicProxyAndroid {
 
     public static boolean enable = true;
     public static String TAG = "aspectImpl";
-
+    static Handler handler;
 
     public static <T> T getProxy(T impl) {
-        return getProxy(impl, true, true,  true, null);
+        return getProxy(impl, true, true, false, false, true, null);
 
     }
 
@@ -36,22 +39,23 @@ public class DynamicProxy {
      * @return
      */
     public static <T> T getProxy(T impl, boolean enableProxyThis, boolean enableLog,
+                                 boolean needOnMainThread, boolean notOnMainIfResultNotVoid,
                                  boolean safeCatchException, ProxyCallback callback) {
         if (!enable) {
-            System.out.println( "disable dynamic proxy by global config:" + impl);
+            Log.w(TAG, "disable dynamic proxy by global config:" + impl);
             return impl;
         }
         if (!enableProxyThis) {
-            w(TAG, "disable dynamic proxy by current config:" + impl);
+            Log.w(TAG, "disable dynamic proxy by current config:" + impl);
             return impl;
         }
         Class<?>[] classes = getInterfaces2(impl);
 
         if (classes == null || classes.length == 0) {
-           w(TAG, impl.getClass().getName() + " : no interfaces");
+            Log.w(TAG, impl.getClass().getName() + " : no interfaces");
             return impl;
         }
-        v(TAG, impl.getClass().getName() + " : getInterfaces : " + Arrays.toString(classes));
+        Log.v(TAG, impl.getClass().getName() + " : getInterfaces : " + Arrays.toString(classes));
         long start0 = System.currentTimeMillis();
         Object obj = Proxy.newProxyInstance(impl.getClass().getClassLoader(), classes, new InvocationHandler() {
             @Override
@@ -76,8 +80,35 @@ public class DynamicProxy {
                 }
 
                 boolean isReturnVoid = Void.TYPE.equals(method.getReturnType());
+                boolean needOnMainThread2 = false;
+                if (needOnMainThread) {
+                    if (!notOnMainIfResultNotVoid) {
+                        needOnMainThread2 = true;
+                    } else {
+                        if (isReturnVoid) {
+                            needOnMainThread2 = true;
+                        }
+                    }
+                }
 
-                return reallyInvoke(enableLog, method, impl, args, sb, start0, callback, proxy, safeCatchException);
+                if (needOnMainThread2) {
+                    if (handler == null) {
+                        handler = new Handler(Looper.getMainLooper());
+                    }
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                reallyInvoke(enableLog, method, impl, args, sb, start0, callback, proxy, safeCatchException);
+                            } catch (Throwable throwable) {
+                                throwable.printStackTrace();
+                            }
+                        }
+                    });
+                    return null;
+                } else {
+                    return reallyInvoke(enableLog, method, impl, args, sb, start0, callback, proxy, safeCatchException);
+                }
             }
         });
         try {
@@ -89,8 +120,6 @@ public class DynamicProxy {
         }
 
     }
-
-
 
     private static <T> Object reallyInvoke(boolean enableLog, Method method, T impl, Object[] args, StringBuilder sb,
                                            long start0, ProxyCallback callback, Object proxy, boolean safeCatchException) throws Throwable {
@@ -186,27 +215,12 @@ public class DynamicProxy {
         str = sb0.toString();
 
         if ("main".equals(Thread.currentThread().getName()) && cost > 50) {
-            i(TAG, str);
+            Log.i(TAG, str);
         } else if (str.contains(EXCEPTION_DESC)) {
-           w(TAG, str);
+            Log.w(TAG, str);
         } else {
-           d(TAG, str);
+            Log.d(TAG, str);
         }
-    }
-
-    private static void d(String tag, String str) {
-        System.out.println(tag+"-"+str);
-    }
-
-    private static void i(String tag, String str) {
-        System.out.println(tag+"-"+str);
-    }
-    private static void v(String tag, String str) {
-        System.out.println(tag+"-"+str);
-    }
-
-    private static void w(String tag, String str) {
-        System.out.println(tag+"-"+str);
     }
 
     static String EXCEPTION_DESC = ", throw ";
@@ -216,7 +230,7 @@ public class DynamicProxy {
         default void before(Object proxy, Method method, Object[] args) {
         }
 
-        default void executeByOtherThread(Runnable runnable){
+        default void executeByOtherThread(Callable runnable){
         }
 
         default void onResult(Object proxy, Object result, Method method, Object[] args,long cost) {

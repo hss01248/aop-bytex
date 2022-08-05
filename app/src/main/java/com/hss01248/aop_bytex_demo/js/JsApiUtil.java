@@ -4,7 +4,7 @@ import android.webkit.WebView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.hss01248.aop.dynamicproxy.android.DynamicProxy;
+import com.hss01248.aop.dynamicproxy.android.DynamicProxyAndroid;
 
 import java.lang.reflect.Method;
 
@@ -21,20 +21,20 @@ public class JsApiUtil {
         try {
            T t =  tClass.getConstructor(WebView.class,AppCompatActivity.class).newInstance(webView,activity);
            //生成动态代理:
-           return DynamicProxy.getProxy(t, true, true, true, false, true, new DynamicProxy.ProxyCallback() {
+           return DynamicProxyAndroid.getProxy(t, true, true, true, false, true, new DynamicProxyAndroid.ProxyCallback() {
                 @Override
                 public void before(Object proxy, Method method, Object[] args) {
-                    DynamicProxy.ProxyCallback.super.before(proxy, method, args);
+                    DynamicProxyAndroid.ProxyCallback.super.before(proxy, method, args);
                 }
 
                 @Override
                 public void onResult(Object proxy, Object result, Method method, Object[] args,long cost) {
-                    DynamicProxy.ProxyCallback.super.onResult(proxy, result, method, args,cost);
+                    DynamicProxyAndroid.ProxyCallback.super.onResult(proxy, result, method, args,cost);
                 }
 
                 @Override
                 public void onException(Object proxy, Throwable result, Method method, Object[] args,long cost) {
-                    DynamicProxy.ProxyCallback.super.onException(proxy, result, method, args,cost);
+                    DynamicProxyAndroid.ProxyCallback.super.onException(proxy, result, method, args,cost);
                 }
             });
         } catch (Throwable e) {
