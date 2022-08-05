@@ -9,7 +9,8 @@
 <Button
     android:layout_width="match_parent"
     android:textAllCaps="false"
-    android:text="btn"
+    android:text="jsObjjsObj-fuc1"
+    android:onClick="jsObj_fuc1"
     android:layout_height="wrap_content"/>
 
 </LinearLayout>

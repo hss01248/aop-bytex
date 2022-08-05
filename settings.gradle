@@ -1,3 +1,5 @@
 include ':hss-atest-plungin'
 include ':app'
 rootProject.name = "aop-bytex-Demo"
+include ':dynamicproxy-android'
+include ':dynamicproxy-java'
