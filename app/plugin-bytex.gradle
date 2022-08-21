@@ -39,7 +39,7 @@ ByteX {
     logLevel pluginLogLevel
 }*/
 
-apply plugin: 'bytex.sourcefile2'
+/*apply plugin: 'bytex.sourcefile2'
 SourceFile2{
     enable pluginEnable
     enableInDebug pluginEnableInDebug
@@ -47,7 +47,7 @@ SourceFile2{
 
     deleteLineNumber true
     deleteSourceFile false
-}
+}*/
 
 
 

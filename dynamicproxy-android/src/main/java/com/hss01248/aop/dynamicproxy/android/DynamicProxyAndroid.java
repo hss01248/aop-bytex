@@ -239,5 +239,9 @@ public class DynamicProxyAndroid {
         default void onException(Object proxy, Throwable result, Method method, Object[] args,long cost) {
         }
 
+        default void onTimeout(){
+
+        }
+
     }
 }
